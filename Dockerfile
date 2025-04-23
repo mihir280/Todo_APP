@@ -1,5 +1,5 @@
 # Node Base Image
-FROM node:18-alpine
+FROM node:18-alpine as build
 
 # Working Directory
 WORKDIR /app
@@ -8,13 +8,29 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm ci --only=production
 
 # Copy the rest of the code
 COPY . .
 
-# Run tests
-RUN npm run test
+# Production image
+FROM node:18-alpine
+
+# Create app directory
+WORKDIR /app
+
+# Install production dependencies only
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package*.json ./
+
+# Copy application code
+COPY --from=build /app/app.js ./
+COPY --from=build /app/views ./views
+COPY --from=build /app/public ./public
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=8000
 
 # Expose the port
 EXPOSE 8000

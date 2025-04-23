@@ -1,28 +1,63 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="en">
     <head>
-        <title>Edit <%- todo %></title>
-        <style>
-            a {
-                text-decoration: none;
-                color: black;
-            }
-
-        </style>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Edit Task</title>
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
     </head>
 
     <body>
-        <h1>Edit <%- todo %>:</h1>
-        <form action="/todo/edit/<%= todoIdx %>" method="post">
-            <p>
-                <label for="editTodo">Change to:</label>
-                <input type="hidden" name="_method" value="PUT">
-                <input type="text" name="editTodo" id="editTodo" autofocus placeholder="<%- todo %>" />
-                <input type="submit" value="Save" />
-            </p>
-        </form>
-    </body>
+        <header>
+            <h1>Edit Task</h1>
+            <button class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+        </header>
 
+        <div class="container">
+            <div class="add-form">
+                <form action="/todo/edit/<%= todoIdx %>" method="post">
+                    <input type="hidden" name="_method" value="PUT">
+                    
+                    <div class="form-group">
+                        <label for="editTodo">Task:</label>
+                        <input type="text" name="editTodo" id="editTodo" autofocus value="<%= typeof todo === 'object' ? todo.text : todo %>" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="priority">Priority:</label>
+                        <select name="priority" id="priority" class="priority-select">
+                            <option value="low" <%= (typeof todo === 'object' && todo.priority === 'low') ? 'selected' : '' %>>Low</option>
+                            <option value="medium" <%= (!todo.priority || todo.priority === 'medium') ? 'selected' : '' %>>Medium</option>
+                            <option value="high" <%= (typeof todo === 'object' && todo.priority === 'high') ? 'selected' : '' %>>High</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="due-date">Due Date (optional):</label>
+                        <input type="date" name="dueDate" id="due-date" class="due-date-input" 
+                            value="<%= (typeof todo === 'object' && todo.dueDate) ? todo.dueDate : '' %>" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="completed" <%= (typeof todo === 'object' && todo.completed) ? 'checked' : '' %>>
+                            Mark as completed
+                        </label>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="submit" class="btn-submit">Save Changes</button>
+                        <a href="/todo" class="btn-cancel">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <footer>
+            <p>&copy; <%= new Date().getFullYear() %> DevOps Todo App</p>
+        </footer>
+        
+        <script src="/js/app.js"></script>
+    </body>
 </html>

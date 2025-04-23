@@ -1,111 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Mihir's Todo App</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f4f4f4;
-                color: #333;
-                margin: 0;
-                padding: 0;
-            }
-
-            h1 {
-                background-color: #4CAF50;
-                color: white;
-                margin: 0;
-                padding: 20px;
-                text-align: center;
-            }
-
-            ul {
-                list-style: none;
-                padding: 0;
-            }
-
-            ul li {
-                background: #fff;
-                border: 1px solid #ddd;
-                margin-bottom: 10px;
-                padding: 10px;
-                position: relative;
-            }
-
-            ul li a {
-                color: #333;
-                text-decoration: none;
-                font-weight: bold;
-            }
-
-            ul li a:hover {
-                color: #4CAF50;
-            }
-
-            .delete-btn {
-                color: red;
-                position: absolute;
-                right: 10px;
-                top: 10px;
-            }
-
-            .edit-btn {
-                color: #FFC107;
-                position: absolute;
-                right: 40px;
-                top: 10px;
-            }
-
-            form {
-                background: #fff;
-                padding: 20px;
-                margin-top: 20px;
-            }
-
-            label {
-                display: block;
-                margin-bottom: 10px;
-            }
-
-            input[type="text"] {
-                width: 100%;
-                padding: 10px;
-                margin-bottom: 10px;
-                border: 1px solid #ddd;
-            }
-
-            input[type="submit"] {
-                background-color: #4CAF50;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                cursor: pointer;
-            }
-
-            input[type="submit"]:hover {
-                background-color: #45a049;
-            }
-        </style>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>DevOps Todo App</title>
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
     </head>
 
     <body>
-        <h1>Mihir's DevOps Todo App with CI/CD Pipeline</h1>
-        <ul>
-            <% todolist.forEach(function(todo, index) { %>
-            <li>
-                <a href="/todo/delete/<%= index %>" class="delete-btn">✘</a>
-                <a href="/todo/<%= index %>" class="edit-btn">✎</a>
-                <%- todo %>
-            </li>
-            <% }); %>
-        </ul>
+        <header>
+            <h1>DevOps Todo App with CI/CD Pipeline</h1>
+            <button class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+        </header>
 
-        <form action="/todo/add/" method="post">
-            <p>
-                <label for="newtodo">What should I do?</label>
-                <input type="text" name="newtodo" id="newtodo" autofocus />
-                <input type="submit" value="Add" />
-            </p>
-        </form>
+        <div class="container">
+            <div class="add-form">
+                <form action="/todo/add/" method="post">
+                    <div class="form-group">
+                        <label for="newtodo">What should I do?</label>
+                        <input type="text" name="newtodo" id="newtodo" autofocus placeholder="Enter your task..." />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="priority">Priority:</label>
+                        <select name="priority" id="priority" class="priority-select">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="due-date">Due Date (optional):</label>
+                        <input type="date" name="dueDate" id="due-date" class="due-date-input" />
+                    </div>
+                    
+                    <button type="submit" class="btn-submit">Add Task</button>
+                </form>
+            </div>
+            
+            <h2>My Tasks</h2>
+            
+            <div class="filter-bar">
+                <button class="filter-option active" data-filter="all">All</button>
+                <button class="filter-option" data-filter="active">Active</button>
+                <button class="filter-option" data-filter="completed">Completed</button>
+                <button class="filter-option" data-filter="high">High Priority</button>
+                <button class="filter-option" data-filter="medium">Medium Priority</button>
+                <button class="filter-option" data-filter="low">Low Priority</button>
+                <button class="filter-option" data-filter="overdue">Overdue</button>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <ul class="todo-list">
+                <% todolist.forEach(function(todo, index) { %>
+                <li class="todo-item priority-<%= todo.priority || 'medium' %> <%= typeof todo === 'object' && todo.completed ? 'completed' : '' %>" data-id="<%= index %>">
+                    <div class="todo-text"><%= typeof todo === 'object' ? todo.text : todo %></div>
+                    
+                    <% if (typeof todo === 'object' && todo.dueDate) { %>
+                    <div class="due-date" data-date="<%= todo.dueDate %>">
+                        Due: <%= new Date(todo.dueDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %>
+                    </div>
+                    <% } %>
+                    
+                    <div class="todo-actions">
+                        <button class="btn btn-complete" aria-label="Mark as complete">
+                            ✓
+                        </button>
+                        <a href="/todo/<%= index %>" class="btn btn-edit" aria-label="Edit task">
+                            ✎
+                        </a>
+                        <a href="/todo/delete/<%= index %>" class="btn btn-delete" aria-label="Delete task">
+                            ✕
+                        </a>
+                    </div>
+                </li>
+                <% }); %>
+                
+                <% if(todolist.length === 0) { %>
+                <li class="todo-item empty-list">
+                    <div class="todo-text">Your todo list is empty. Add a task to get started!</div>
+                </li>
+                <% } %>
+            </ul>
+            
+            <div id="offline-indicator" class="offline-indicator">
+                You are offline. Changes will be synced when you're back online.
+            </div>
+        </div>
+        
+        <footer>
+            <p>&copy; <%= new Date().getFullYear() %> DevOps Todo App</p>
+        </footer>
+        
+        <script src="/js/app.js"></script>
     </body>
 </html>
