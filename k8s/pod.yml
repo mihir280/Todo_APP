@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: node-pod
+  namespace: node-app
+  labels:
+    app: node-app
+
+spec:
+  containers:
+    - name: node-container
+      image: mihir064/node-app:latest
+      ports:
+        - containerPort: 8000
